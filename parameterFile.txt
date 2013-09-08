@@ -1,0 +1,3 @@
+queryFilePath=queries.txt
+indexPath=/media/bolei/work/libary/index.tgz
+retrievalAlgorithm=UnrankedBoolean

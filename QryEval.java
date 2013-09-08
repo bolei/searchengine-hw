@@ -59,6 +59,7 @@ public class QryEval {
       String[] pair = line.split("=");
       params.put(pair[0].trim(), pair[1].trim());
     } while (scan.hasNext());
+    scan.close();
     
     // parameters required for this example to run
     if (!params.containsKey("indexPath")) {
