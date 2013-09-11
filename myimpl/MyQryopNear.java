@@ -24,6 +24,9 @@ public class MyQryopNear extends MyQryop {
 		}
 		MyInvertedList invList = (MyInvertedList) result;
 		for (int i = 1; i < args.size(); i++) {
+			if (invList.getDocPostings().isEmpty()) {
+				return invList;
+			}
 			MyQryResult curResult = args.get(i).evaluate();
 			if (curResult instanceof MyInvertedList == false) {
 				throw new RuntimeException(
@@ -33,15 +36,19 @@ public class MyQryopNear extends MyQryop {
 			MyInvertedList curInvList = (MyInvertedList) curResult;
 
 			// get all intersected doc ids
-			invList.getDocPostings().keySet()
-					.retainAll(curInvList.getDocPostings().keySet());
-			for (int docId : invList.getDocPostings().keySet()) {
+			TreeSet<Integer> intersectionDocIds = new TreeSet<Integer>(invList
+					.getDocPostings().keySet());
+			intersectionDocIds.retainAll(curInvList.getDocPostings().keySet());
+			for (int docId : intersectionDocIds) {
 				TreeSet<Integer> nearCompareSet = new TreeSet<Integer>(
 						new NearComparator());
 				nearCompareSet.addAll(curInvList.getDocPostings().get(docId));
 
 				// remove all positions that not near that in curInvList
 				invList.getDocPostings().get(docId).retainAll(nearCompareSet);
+				if (invList.getDocPostings().get(docId).isEmpty()) {
+					invList.getDocPostings().remove(docId);
+				}
 			}
 		}
 

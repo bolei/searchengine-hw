@@ -1,5 +1,7 @@
 package myimpl;
 
+import java.util.Comparator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -13,6 +15,13 @@ public class MyScoreList implements MyQryResult {
 
 	public TreeMap<Integer, Float> getScores() {
 		return scores;
+	}
+
+	public TreeMap<Integer, Float> getSortedScores() {
+		TreeMap<Integer, Float> sortedScores = new TreeMap<Integer, Float>(
+				new ScoreDescComparator(scores));
+		sortedScores.putAll(scores);
+		return sortedScores;
 	}
 
 	/**
@@ -50,5 +59,34 @@ public class MyScoreList implements MyQryResult {
 			newSl.addScore(docId, score);
 		}
 		return newSl;
+	}
+
+	private class ScoreDescComparator implements Comparator<Integer> {
+		private Map<Integer, Float> base;
+
+		public ScoreDescComparator(Map<Integer, Float> base) {
+			this.base = base;
+		}
+
+		@Override
+		public int compare(Integer o1, Integer o2) {
+			float diff = base.get(o1) - base.get(o2);
+			// descending ordering by score
+			if (diff > 0) {
+				return -1;
+			} else if (diff < 0) {
+				return 1;
+			} else {
+				// ascending ordering by docId
+				if (o1 - o2 > 0) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+
+			// do not return 0 to prevent from merging
+		}
+
 	}
 }

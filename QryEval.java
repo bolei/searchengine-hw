@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import myimpl.AbstractDefaultQryParser;
-import myimpl.DefaultOrQryParser;
 import myimpl.MiscUtil;
+import myimpl.QryParser;
+import myimpl.StructuredQryParser;
 
 import org.apache.lucene.index.IndexReader;
 
@@ -24,7 +24,7 @@ public class QryEval {
 	 */
 	public static IndexReader READER;
 
-	public static AbstractDefaultQryParser defaultQueryParser = new DefaultOrQryParser();
+	public static QryParser defaultQueryParser = new StructuredQryParser();
 
 	/**
 	 * 
@@ -76,9 +76,8 @@ public class QryEval {
 			while ((line = br.readLine()) != null) {
 				String[] strArr = line.split(":");
 				// String queryId = strArr[0];
-				String[] queryTokens = MiscUtil.tokenizeQuery(strArr[1]);
 				MiscUtil.printResults(strArr[0],
-						defaultQueryParser.parseQuery(queryTokens).evaluate());
+						defaultQueryParser.parseQuery(strArr[1]).evaluate());
 			}
 		} finally {
 			if (br != null) {

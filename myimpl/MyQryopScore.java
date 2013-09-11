@@ -22,6 +22,10 @@ public class MyQryopScore extends MyQryop {
 		// Evaluate the query argument.
 		MyQryResult result = args.get(0).evaluate();
 
+		if (result instanceof MyScoreList) {
+			return (MyScoreList) result;
+		}
+
 		if (result instanceof MyInvertedList == false) {
 			throw new RuntimeException(
 					"MyQryopScore.evaluate() input is not inverted list");

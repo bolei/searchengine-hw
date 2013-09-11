@@ -71,6 +71,10 @@ public class MiscUtil {
 		return tokens.toArray(new String[tokens.size()]);
 	}
 
+	public static boolean isStopWord(String token) {
+		return analyzer.getStopwordSet().contains(token);
+	}
+
 	/**
 	 * Prints the query results.
 	 * 
@@ -93,8 +97,11 @@ public class MiscUtil {
 			return;
 		}
 		MyScoreList sl = (MyScoreList) result;
-		int rank = 0;
-		for (Entry<Integer, Float> entry : sl.getScores().entrySet()) {
+		int rank = 1;
+		for (Entry<Integer, Float> entry : sl.getSortedScores().entrySet()) {
+			if (rank > 100) {
+				return;
+			}
 			System.out.println(String.format("%s\tQ0\t%s\t%d\t%f\trun-1",
 					queryId, getExternalDocid(entry.getKey()), rank,
 					entry.getValue()));
