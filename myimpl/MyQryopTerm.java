@@ -26,4 +26,9 @@ public class MyQryopTerm extends MyQryop {
 		MyInvertedList result = new MyInvertedList(this.term, this.field);
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("#MyQryopTerm(term=%s, field=%s)", term, field);
+	}
 }

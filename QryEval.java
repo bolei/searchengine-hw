@@ -10,7 +10,6 @@ import myimpl.AbstractDefaultQryParser;
 import myimpl.DefaultOrQryParser;
 import myimpl.MiscUtil;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 
 public class QryEval {
@@ -92,28 +91,6 @@ public class QryEval {
 			}
 		}
 
-	}
-
-	/**
-	 * Get the external document id for a document specified by an internal
-	 * document id. Ordinarily this would be a simple call to the Lucene index
-	 * reader, but when the index was built, the indexer added "_0" to the end
-	 * of each external document id. The correct solution would be to fix the
-	 * index, but it's too late for that now, so it is fixed here before the id
-	 * is returned.
-	 * 
-	 * @param iid
-	 *            The internal document id of the document.
-	 * @throws IOException
-	 */
-	static String getExternalDocid(int iid) throws IOException {
-		Document d = QryEval.READER.document(iid);
-		String eid = d.get("externalId");
-
-		if ((eid != null) && eid.endsWith("_0"))
-			eid = eid.substring(0, eid.length() - 2);
-
-		return (eid);
 	}
 
 }

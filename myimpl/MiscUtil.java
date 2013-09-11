@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.lucene.analysis.Analyzer.TokenStreamComponents;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
@@ -94,10 +95,32 @@ public class MiscUtil {
 		MyScoreList sl = (MyScoreList) result;
 		int rank = 0;
 		for (Entry<Integer, Float> entry : sl.getScores().entrySet()) {
-			System.out.println(String.format("%s\tQ0\t%d\t%d\t%f\trun-1",
-					queryId, entry.getKey(), rank, entry.getValue()));
+			System.out.println(String.format("%s\tQ0\t%s\t%d\t%f\trun-1",
+					queryId, getExternalDocid(entry.getKey()), rank,
+					entry.getValue()));
 			rank++;
 		}
 	}
 
+	/**
+	 * Get the external document id for a document specified by an internal
+	 * document id. Ordinarily this would be a simple call to the Lucene index
+	 * reader, but when the index was built, the indexer added "_0" to the end
+	 * of each external document id. The correct solution would be to fix the
+	 * index, but it's too late for that now, so it is fixed here before the id
+	 * is returned.
+	 * 
+	 * @param iid
+	 *            The internal document id of the document.
+	 * @throws IOException
+	 */
+	private static String getExternalDocid(int iid) throws IOException {
+		Document d = indexReader.document(iid);
+		String eid = d.get("externalId");
+
+		if ((eid != null) && eid.endsWith("_0"))
+			eid = eid.substring(0, eid.length() - 2);
+
+		return (eid);
+	}
 }

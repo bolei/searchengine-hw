@@ -21,24 +21,27 @@ public class MyQryopScore extends MyQryop {
 
 		// Evaluate the query argument.
 		MyQryResult result = args.get(0).evaluate();
+
+		if (result instanceof MyInvertedList == false) {
+			throw new RuntimeException(
+					"MyQryopScore.evaluate() input is not inverted list");
+		}
+
 		MyScoreList scoreList = new MyScoreList();
 
-		if (result instanceof MyInvertedList) {
-			// Each pass of the loop computes a score for one document. Note: If
-			// the evaluate operation above returned a score list (which is very
-			// possible), this loop gets skipped.
+		// Each pass of the loop computes a score for one document. Note: If
+		// the evaluate operation above returned a score list (which is very
+		// possible), this loop gets skipped.
 
-			MyInvertedList invList = (MyInvertedList) result;
+		MyInvertedList invList = (MyInvertedList) result;
 
-			TreeMap<Integer, TreeSet<Integer>> postings = invList
-					.getDocPostings();
+		TreeMap<Integer, TreeSet<Integer>> postings = invList.getDocPostings();
 
-			for (Entry<Integer, TreeSet<Integer>> entry : postings.entrySet()) {
+		for (Entry<Integer, TreeSet<Integer>> entry : postings.entrySet()) {
 
-				// DIFFERENT RETRIEVAL MODELS IMPLEMENT THIS DIFFERENTLY.
-				// Unranked Boolean. All matching documents get a score of 1.0.
-				scoreList.addScore(entry.getKey(), (float) 1.0);
-			}
+			// DIFFERENT RETRIEVAL MODELS IMPLEMENT THIS DIFFERENTLY.
+			// Unranked Boolean. All matching documents get a score of 1.0.
+			scoreList.addScore(entry.getKey(), (float) 1.0);
 		}
 
 		return scoreList;
