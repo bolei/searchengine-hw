@@ -1,3 +1,5 @@
+package myimpl;
+
 public interface QryParser {
-	public Qryop parseQuery(String[] queryTokens);
+	public MyQryop parseQuery(String[] queryTokens);
 }

@@ -1,3 +1,5 @@
+package myimpl;
+
 import java.util.List;
 
 /**
@@ -8,7 +10,7 @@ import java.util.List;
 public class DefaultOrQryParser extends AbstractDefaultQryParser {
 
 	@Override
-	public Qryop getQryOperator(List<QryopTerm> qryTerms) {
-		return new QryopOr(qryTerms.toArray(new QryopTerm[] {}));
+	public MyQryop getQryOperator(List<MyQryopTerm> qryTerms) {
+		return new MyQryopOr(qryTerms.toArray(new MyQryopTerm[] {}));
 	}
 }
