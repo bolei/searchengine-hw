@@ -13,7 +13,7 @@ public class MyQryopOr extends MyQryop {
 		MyQryopScore impliedQryOp = MyQryopScore.createQryopScore(args.get(0));
 		MyScoreList result = impliedQryOp.evaluate();
 		for (int i = 1; i < args.size(); i++) {
-			impliedQryOp = MyQryopScore.createQryopScore(args.get(0));
+			impliedQryOp = MyQryopScore.createQryopScore(args.get(i));
 			MyScoreList iResult = impliedQryOp.evaluate();
 			result = MyScoreList.union(result, iResult);
 		}

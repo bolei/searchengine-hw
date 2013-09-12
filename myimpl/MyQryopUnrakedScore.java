@@ -18,7 +18,7 @@ public class MyQryopUnrakedScore extends MyQryopScore {
 		for (int docId : postings.keySet()) {
 
 			// Unranked Boolean. All matching documents get a score of 1.0.
-			scoreList.addScore(docId, (double) 1.0);
+			scoreList.addScore(docId, 1.0d);
 		}
 
 		return scoreList;

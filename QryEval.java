@@ -82,7 +82,8 @@ public class QryEval {
 				String[] strArr = line.split(":");
 				// String queryId = strArr[0];
 				MiscUtil.printResults(strArr[0],
-						defaultQueryParser.parseQuery(strArr[1]).evaluate());
+						defaultQueryParser.parseQuery(strArr[1]).evaluate(),
+						true, true);
 			}
 		} finally {
 			if (br != null) {
