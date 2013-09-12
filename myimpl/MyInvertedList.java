@@ -60,7 +60,7 @@ public class MyInvertedList implements MyQryResult {
 
 	public int getTf(int docId) {
 		if (docPostings.containsKey(docId) == false) {
-			return -1; // not found
+			return 0; // not found
 		}
 		return docPostings.get(docId).size();
 	}

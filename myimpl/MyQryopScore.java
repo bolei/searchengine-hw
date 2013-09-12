@@ -1,16 +1,15 @@
 package myimpl;
 
 import java.io.IOException;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
-public class MyQryopScore extends MyQryop {
+public abstract class MyQryopScore extends MyQryop {
+
+	private static boolean isRankedModel = false;
 
 	/**
 	 * The SCORE operator accepts just one argument.
 	 */
-	public MyQryopScore(MyQryop q) {
+	protected MyQryopScore(MyQryop q) {
 		this.args.add(q);
 	}
 
@@ -31,23 +30,23 @@ public class MyQryopScore extends MyQryop {
 					"MyQryopScore.evaluate() input is not inverted list");
 		}
 
-		MyScoreList scoreList = new MyScoreList();
-
-		// Each pass of the loop computes a score for one document. Note: If
-		// the evaluate operation above returned a score list (which is very
-		// possible), this loop gets skipped.
-
 		MyInvertedList invList = (MyInvertedList) result;
+		return getScoreList(invList);
 
-		TreeMap<Integer, TreeSet<Integer>> postings = invList.getDocPostings();
-
-		for (Entry<Integer, TreeSet<Integer>> entry : postings.entrySet()) {
-
-			// DIFFERENT RETRIEVAL MODELS IMPLEMENT THIS DIFFERENTLY.
-			// Unranked Boolean. All matching documents get a score of 1.0.
-			scoreList.addScore(entry.getKey(), (float) 1.0);
-		}
-
-		return scoreList;
 	}
+
+	protected abstract MyScoreList getScoreList(MyInvertedList invList);
+
+	public static void setRankedModel(boolean isRanked) {
+		isRankedModel = isRanked;
+	}
+
+	public static MyQryopScore createQryopScore(MyQryop arg) {
+		if (isRankedModel) {
+			return new MyQryopRankedScore(arg);
+		} else {
+			return new MyQryopUnrakedScore(arg);
+		}
+	}
+
 }

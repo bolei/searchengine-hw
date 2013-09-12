@@ -18,13 +18,13 @@ public class MyQryopAnd extends MyQryop {
 	 */
 	public MyScoreList evaluate() throws IOException {
 
-		MyQryopScore impliedQryOp = new MyQryopScore(args.get(0));
+		MyQryopScore impliedQryOp = MyQryopScore.createQryopScore(args.get(0));
 		MyScoreList result = impliedQryOp.evaluate();
 
 		// Each pass of the loop evaluates one query argument.
 		for (int i = 1; i < args.size(); i++) {
 
-			impliedQryOp = new MyQryopScore(args.get(i));
+			impliedQryOp = MyQryopScore.createQryopScore(args.get(i));
 			MyScoreList iResult = impliedQryOp.evaluate();
 
 			result = MyScoreList.intersection(result, iResult);

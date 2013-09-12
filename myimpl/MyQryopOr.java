@@ -10,10 +10,10 @@ public class MyQryopOr extends MyQryop {
 
 	@Override
 	public MyScoreList evaluate() throws IOException {
-		MyQryopScore impliedQryOp = new MyQryopScore(args.get(0));
+		MyQryopScore impliedQryOp = MyQryopScore.createQryopScore(args.get(0));
 		MyScoreList result = impliedQryOp.evaluate();
 		for (int i = 1; i < args.size(); i++) {
-			impliedQryOp = new MyQryopScore(args.get(i));
+			impliedQryOp = MyQryopScore.createQryopScore(args.get(0));
 			MyScoreList iResult = impliedQryOp.evaluate();
 			result = MyScoreList.union(result, iResult);
 		}

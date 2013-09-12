@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import myimpl.MiscUtil;
+import myimpl.MyQryopScore;
 import myimpl.QryParser;
 import myimpl.StructuredQryParser;
 
@@ -69,10 +70,14 @@ public class QryEval {
 			System.exit(1);
 		}
 
+		String retrievalAlg = params.get("retrievalAlgorithm");
+		if (retrievalAlg.equals("RankedBoolean")) {
+			MyQryopScore.setRankedModel(true);
+		}
+
 		BufferedReader br = new BufferedReader(new FileReader(
 				params.get("queryFilePath")));
 		try {
-
 			while ((line = br.readLine()) != null) {
 				String[] strArr = line.split(":");
 				// String queryId = strArr[0];

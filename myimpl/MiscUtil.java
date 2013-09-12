@@ -98,13 +98,15 @@ public class MiscUtil {
 		}
 		MyScoreList sl = (MyScoreList) result;
 		int rank = 1;
-		for (Entry<Integer, Float> entry : sl.getSortedScores().entrySet()) {
+		for (Entry<Integer, Double> entry : sl.getSortedScores().entrySet()) {
 			if (rank > 100) {
 				return;
 			}
 			System.out.println(String.format("%s\tQ0\t%s\t%d\t%f\trun-1",
 					queryId, getExternalDocid(entry.getKey()), rank,
 					entry.getValue()));
+			// System.out.println(String.format("%s\tQ0\t%s\t%d\t%f\trun-1",
+			// queryId, entry.getKey(), rank, entry.getValue()));
 			rank++;
 		}
 	}

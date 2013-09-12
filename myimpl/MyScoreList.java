@@ -7,18 +7,18 @@ import java.util.TreeSet;
 
 public class MyScoreList implements MyQryResult {
 	// <docId, score>
-	private TreeMap<Integer, Float> scores = new TreeMap<Integer, Float>();
+	private TreeMap<Integer, Double> scores = new TreeMap<Integer, Double>();
 
-	public void addScore(Integer docId, Float score) {
+	public void addScore(Integer docId, Double score) {
 		scores.put(docId, score);
 	}
 
-	public TreeMap<Integer, Float> getScores() {
+	public TreeMap<Integer, Double> getScores() {
 		return scores;
 	}
 
-	public TreeMap<Integer, Float> getSortedScores() {
-		TreeMap<Integer, Float> sortedScores = new TreeMap<Integer, Float>(
+	public TreeMap<Integer, Double> getSortedScores() {
+		TreeMap<Integer, Double> sortedScores = new TreeMap<Integer, Double>(
 				new ScoreDescComparator(scores));
 		sortedScores.putAll(scores);
 		return sortedScores;
@@ -46,7 +46,7 @@ public class MyScoreList implements MyQryResult {
 		keySet.addAll(sl2.scores.keySet());
 		MyScoreList newSl = new MyScoreList();
 		for (int docId : keySet) {
-			float score = 0f;
+			double score = 0d;
 			if (sl1.scores.containsKey(docId) && !sl2.scores.containsKey(docId)) {
 				score = sl1.scores.get(docId);
 			} else if (sl2.scores.containsKey(docId)
@@ -62,15 +62,15 @@ public class MyScoreList implements MyQryResult {
 	}
 
 	private class ScoreDescComparator implements Comparator<Integer> {
-		private Map<Integer, Float> base;
+		private Map<Integer, Double> base;
 
-		public ScoreDescComparator(Map<Integer, Float> base) {
+		public ScoreDescComparator(Map<Integer, Double> base) {
 			this.base = base;
 		}
 
 		@Override
 		public int compare(Integer o1, Integer o2) {
-			float diff = base.get(o1) - base.get(o2);
+			double diff = base.get(o1) - base.get(o2);
 			// descending ordering by score
 			if (diff > 0) {
 				return -1;
