@@ -2,7 +2,8 @@ package myimpl;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 
 public class MyQryopNear extends MyQryop {
@@ -39,15 +40,31 @@ public class MyQryopNear extends MyQryop {
 			TreeSet<Integer> intersectionDocIds = new TreeSet<Integer>(invList
 					.getDocPostings().keySet());
 			intersectionDocIds.retainAll(curInvList.getDocPostings().keySet());
-			for (int docId : intersectionDocIds) {
-				TreeSet<Integer> nearCompareSet = new TreeSet<Integer>(
-						new NearComparator());
-				nearCompareSet.addAll(curInvList.getDocPostings().get(docId));
+			Iterator<Entry<Integer, TreeSet<Integer>>> entryIt = invList
+					.getDocPostings().entrySet().iterator();
+			while (entryIt.hasNext()) {
+				Entry<Integer, TreeSet<Integer>> entry = entryIt.next();
+				if (intersectionDocIds.contains(entry.getKey()) == false) {
+					entryIt.remove();
+				}
+			}
 
-				// remove all positions that not near that in curInvList
-				invList.getDocPostings().get(docId).retainAll(nearCompareSet);
-				if (invList.getDocPostings().get(docId).isEmpty()) {
+			for (int docId : intersectionDocIds) {
+				TreeSet<Integer> invPositions = invList.getDocPostings().get(
+						docId);
+				TreeSet<Integer> curPositions = curInvList.getDocPostings()
+						.get(docId);
+				TreeSet<Integer> newPostions = new TreeSet<Integer>();
+				for (int pos : invPositions) {
+					Integer high = curPositions.higher(pos);
+					if (high != null && (high - pos) < windowSize) {
+						newPostions.add(high);
+					}
+				}
+				if (newPostions.isEmpty()) {
 					invList.getDocPostings().remove(docId);
+				} else {
+					invList.getDocPostings().put(docId, newPostions);
 				}
 			}
 		}
@@ -56,17 +73,4 @@ public class MyQryopNear extends MyQryop {
 
 	}
 
-	private class NearComparator implements Comparator<Integer> {
-
-		@Override
-		public int compare(Integer o1, Integer o2) {
-
-			// o1 is pos in rhs arg of QryopSyn
-			int diff = o1 - o2;
-			if (diff < windowSize && diff > 0) {
-				return 0;
-			}
-			return diff;
-		}
-	}
 }
