@@ -57,7 +57,7 @@ public class MyQryopNear extends MyQryop {
 				TreeSet<Integer> newPostions = new TreeSet<Integer>();
 				for (int pos : invPositions) {
 					Integer high = curPositions.higher(pos);
-					if (high != null && (high - pos) < windowSize) {
+					if (high != null && (high - pos) <= windowSize) {
 						newPostions.add(high);
 					}
 				}
