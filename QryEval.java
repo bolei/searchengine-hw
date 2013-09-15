@@ -77,6 +77,7 @@ public class QryEval {
 
 		BufferedReader br = new BufferedReader(new FileReader(
 				params.get("queryFilePath")));
+		long begin = System.currentTimeMillis();
 		try {
 			while ((line = br.readLine()) != null) {
 				String[] strArr = line.split(":");
@@ -94,6 +95,9 @@ public class QryEval {
 					throw ioe;
 				}
 			}
+			long end = System.currentTimeMillis();
+			System.err.println(String.format("time used: %d millis",
+					(end - begin)));
 		}
 
 	}
