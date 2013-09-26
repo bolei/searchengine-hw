@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Scanner;
 
 import myimpl.MiscUtil;
-import myimpl.MyQryopScore;
 import myimpl.QryParser;
 import myimpl.StructuredQryParser;
+import myimpl.queryop.MyQryopScore;
 
 import org.apache.lucene.index.IndexReader;
 

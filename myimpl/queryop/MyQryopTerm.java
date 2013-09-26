@@ -1,6 +1,8 @@
-package myimpl;
+package myimpl.queryop;
 
 import java.io.IOException;
+
+import myimpl.queryresult.MyInvertedList;
 
 public class MyQryopTerm extends MyQryop {
 

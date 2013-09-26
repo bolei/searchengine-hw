@@ -1,9 +1,11 @@
-package myimpl;
+package myimpl.queryresult;
 
 import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import myimpl.MiscUtil;
 
 import org.apache.lucene.index.DocsAndPositionsEnum;
 import org.apache.lucene.index.IndexReader;
@@ -82,6 +84,11 @@ public class MyInvertedList implements MyQryResult {
 			ctf += entry.getValue().size();
 		}
 		return ctf;
+	}
+
+	public MyInvertedList clear() {
+		docPostings.clear();
+		return this;
 	}
 
 }

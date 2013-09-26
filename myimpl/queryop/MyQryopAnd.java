@@ -1,6 +1,8 @@
-package myimpl;
+package myimpl.queryop;
 
 import java.io.IOException;
+
+import myimpl.queryresult.MyScoreList;
 
 public class MyQryopAnd extends MyQryop {
 

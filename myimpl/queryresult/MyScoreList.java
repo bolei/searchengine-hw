@@ -1,4 +1,4 @@
-package myimpl;
+package myimpl.queryresult;
 
 import java.util.Comparator;
 import java.util.Map;

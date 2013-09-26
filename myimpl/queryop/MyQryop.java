@@ -1,8 +1,10 @@
-package myimpl;
+package myimpl.queryop;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import myimpl.queryresult.MyQryResult;
 
 public abstract class MyQryop {
 

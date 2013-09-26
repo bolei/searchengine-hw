@@ -1,6 +1,10 @@
-package myimpl;
+package myimpl.queryop;
 
 import java.io.IOException;
+
+import myimpl.queryresult.MyInvertedList;
+import myimpl.queryresult.MyQryResult;
+import myimpl.queryresult.MyScoreList;
 
 public abstract class MyQryopScore extends MyQryop {
 

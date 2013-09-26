@@ -6,6 +6,9 @@ import java.util.ListIterator;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import myimpl.queryop.MyQryop;
+import myimpl.queryop.MyQryopTerm;
+
 public class StructuredQryParser implements QryParser {
 
 	@Override

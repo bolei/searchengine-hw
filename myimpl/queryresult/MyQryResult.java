@@ -1,4 +1,4 @@
-package myimpl;
+package myimpl.queryresult;
 
 public interface MyQryResult {
 }

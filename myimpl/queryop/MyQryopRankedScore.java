@@ -1,4 +1,7 @@
-package myimpl;
+package myimpl.queryop;
+
+import myimpl.queryresult.MyInvertedList;
+import myimpl.queryresult.MyScoreList;
 
 public class MyQryopRankedScore extends MyQryopScore {
 

@@ -1,7 +1,10 @@
-package myimpl;
+package myimpl.queryop;
 
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import myimpl.queryresult.MyInvertedList;
+import myimpl.queryresult.MyScoreList;
 
 public class MyQryopUnrakedScore extends MyQryopScore {
 
