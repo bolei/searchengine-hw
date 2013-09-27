@@ -61,6 +61,26 @@ public class MyScoreList implements MyQryResult {
 		return newSl;
 	}
 
+	public static MyScoreList plus(MyScoreList sl1, MyScoreList sl2) {
+		TreeSet<Integer> keySet = new TreeSet<Integer>(sl1.scores.keySet());
+		keySet.addAll(sl2.scores.keySet());
+		MyScoreList newSl = new MyScoreList();
+		for (int docId : keySet) {
+			double score = 0d;
+			if (sl1.scores.containsKey(docId) && !sl2.scores.containsKey(docId)) {
+				score = sl1.scores.get(docId);
+			} else if (sl2.scores.containsKey(docId)
+					&& !sl1.scores.containsKey(docId)) {
+				score = sl2.scores.get(docId);
+			} else if (sl1.scores.containsKey(docId)
+					&& sl2.scores.containsKey(docId)) {
+				score = sl1.scores.get(docId) + sl2.scores.get(docId);
+			}
+			newSl.addScore(docId, score);
+		}
+		return newSl;
+	}
+
 	private class ScoreDescComparator implements Comparator<Integer> {
 		private Map<Integer, Double> base;
 

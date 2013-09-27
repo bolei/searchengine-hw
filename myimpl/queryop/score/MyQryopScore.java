@@ -1,7 +1,8 @@
-package myimpl.queryop;
+package myimpl.queryop.score;
 
 import java.io.IOException;
 
+import myimpl.queryop.MyQryop;
 import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyQryResult;
 import myimpl.queryresult.MyScoreList;
@@ -39,7 +40,8 @@ public abstract class MyQryopScore extends MyQryop {
 
 	}
 
-	protected abstract MyScoreList getScoreList(MyInvertedList invList);
+	protected abstract MyScoreList getScoreList(MyInvertedList invList)
+			throws IOException;
 
 	public static void setRankedModel(boolean isRanked) {
 		isRankedModel = isRanked;

@@ -15,10 +15,16 @@ import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.util.BytesRef;
 
 public class MyInvertedList implements MyQryResult {
+
+	private String termString;
+	private String fieldString;
+
 	private TreeMap<Integer, TreeSet<Integer>> docPostings = new TreeMap<Integer, TreeSet<Integer>>();
 
 	public MyInvertedList(String termString, String fieldString)
 			throws IOException {
+		this.termString = termString;
+		this.fieldString = fieldString;
 		// Prepare to access the index.
 		BytesRef termBytes = new BytesRef(termString);
 		Term term = new Term(fieldString, termBytes);
@@ -89,6 +95,14 @@ public class MyInvertedList implements MyQryResult {
 	public MyInvertedList clear() {
 		docPostings.clear();
 		return this;
+	}
+
+	public String getTermString() {
+		return termString;
+	}
+
+	public String getFieldString() {
+		return fieldString;
 	}
 
 }

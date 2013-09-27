@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -30,6 +31,10 @@ public class MiscUtil {
 		analyzer.setStemmer(MyEnglishAnalyzerConfigurable.StemmerType.KSTEM);
 	}
 
+	private static DocLengthStore dls;
+
+	private static HashMap<String, String> prop;
+
 	public static IndexReader createIndexReader(String indexPath)
 			throws IOException {
 		indexReader = DirectoryReader.open(FSDirectory
@@ -43,6 +48,13 @@ public class MiscUtil {
 			System.exit(1);
 		}
 		return indexReader;
+	}
+
+	public static DocLengthStore getDocLengthStore() throws IOException {
+		if (dls == null) {
+			dls = new DocLengthStore(getIndexReader());
+		}
+		return dls;
 	}
 
 	/**
@@ -138,4 +150,13 @@ public class MiscUtil {
 
 		return (eid);
 	}
+
+	public static HashMap<String, String> getProp() {
+		return prop;
+	}
+
+	public static void setProp(HashMap<String, String> prop) {
+		MiscUtil.prop = prop;
+	}
+
 }

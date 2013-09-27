@@ -1,8 +1,9 @@
-package myimpl.queryop;
+package myimpl.queryop.score;
 
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import myimpl.queryop.MyQryop;
 import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyScoreList;
 

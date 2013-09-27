@@ -3,13 +3,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import myimpl.MiscUtil;
 import myimpl.QryParser;
 import myimpl.StructuredQryParser;
-import myimpl.queryop.MyQryopScore;
+import myimpl.queryop.score.MyQryopScore;
 
 import org.apache.lucene.index.IndexReader;
 
@@ -44,7 +43,7 @@ public class QryEval {
 
 		// read in the parameter file; one parameter per line in format of
 		// key=value
-		Map<String, String> params = new HashMap<String, String>();
+		HashMap<String, String> params = new HashMap<String, String>();
 		Scanner scan = new Scanner(new File(args[0]));
 		String line = null;
 		do {
@@ -53,6 +52,8 @@ public class QryEval {
 			params.put(pair[0].trim(), pair[1].trim());
 		} while (scan.hasNext());
 		scan.close();
+
+		MiscUtil.setProp(params);
 
 		// parameters required for this example to run
 		if (!params.containsKey("indexPath")) {

@@ -3,6 +3,7 @@ package myimpl.queryop;
 import java.io.IOException;
 import java.util.Collections;
 
+import myimpl.queryop.score.MyQryopScore;
 import myimpl.queryresult.MyScoreList;
 
 public class MyQryopOr extends MyQryop {

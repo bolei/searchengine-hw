@@ -34,6 +34,8 @@ public abstract class MyQryop {
 			int n = Integer
 					.parseInt(opName.substring(opName.lastIndexOf('/') + 1));
 			return new MyQryopNear(n, myQryops);
+		} else if (opName.startsWith("#SUM")) {
+			return new MyQryopSum(myQryops);
 		} else {
 			throw new RuntimeException("unknown query operator name:" + opName);
 		}

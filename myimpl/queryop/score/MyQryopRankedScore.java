@@ -1,5 +1,6 @@
-package myimpl.queryop;
+package myimpl.queryop.score;
 
+import myimpl.queryop.MyQryop;
 import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyScoreList;
 
