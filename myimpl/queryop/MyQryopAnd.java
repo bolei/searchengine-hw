@@ -2,35 +2,31 @@ package myimpl.queryop;
 
 import java.io.IOException;
 
-import myimpl.queryop.score.MyQryopScore;
 import myimpl.queryresult.MyScoreList;
+import myimpl.queryresult.operators.MyScoreListDocIdIntersectionOperator;
+import myimpl.queryresult.operators.MyScoreListDocScoreMinOperator;
 
-public class MyQryopAnd extends MyQryop {
-
-	/**
-	 * It is convenient for the constructor to accept a variable number of
-	 * arguments. Thus new qryopAnd (arg1, arg2, arg3, ...).
-	 */
+public class MyQryopAnd extends MyQryopCombineScoreLists {
 	public MyQryopAnd(MyQryop... q) {
-		for (int i = 0; i < q.length; i++)
-			this.args.add(q[i]);
+		super(q);
 	}
 
 	/**
 	 * Evaluate the query operator.
+	 * @throws IOException 
 	 */
-	public MyScoreList evaluate() throws IOException {
-
-		MyQryopScore impliedQryOp = MyQryopScore.createQryopScore(args.get(0));
-		MyScoreList result = impliedQryOp.evaluate();
+	@Override
+	protected MyScoreList doEvaluation() throws IOException {
+		MyScoreList result = args.get(0).evaluate();
 
 		// Each pass of the loop evaluates one query argument.
 		for (int i = 1; i < args.size(); i++) {
 
-			impliedQryOp = MyQryopScore.createQryopScore(args.get(i));
-			MyScoreList iResult = impliedQryOp.evaluate();
+			MyScoreList iResult = args.get(i).evaluate();
 
-			result = MyScoreList.intersection(result, iResult);
+			result = MyScoreList.operate(result, iResult,
+					new MyScoreListDocIdIntersectionOperator(),
+					new MyScoreListDocScoreMinOperator());
 		}
 
 		return result;

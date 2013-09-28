@@ -5,11 +5,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import myimpl.queryresult.operators.MyScoreListDocIdOperator;
+import myimpl.queryresult.operators.MyScoreListDocScoreOperator;
+
 public class MyScoreList implements MyQryResult {
 	// <docId, score>
 	private TreeMap<Integer, Double> scores = new TreeMap<Integer, Double>();
 
-	public void addScore(Integer docId, Double score) {
+	public void putScore(Integer docId, Double score) {
 		scores.put(docId, score);
 	}
 
@@ -24,59 +27,17 @@ public class MyScoreList implements MyQryResult {
 		return sortedScores;
 	}
 
-	/**
-	 * Perform intersection on scores of the two score lists. score will take
-	 * the minimum between the two.
-	 * 
-	 * @return a new score list object
-	 */
-	public static MyScoreList intersection(MyScoreList sl1, MyScoreList sl2) {
-		TreeSet<Integer> keySet = new TreeSet<Integer>(sl1.scores.keySet());
-		keySet.retainAll(sl2.scores.keySet());
+	public static MyScoreList operate(MyScoreList sl1, MyScoreList sl2,
+			MyScoreListDocIdOperator docIdOp,
+			MyScoreListDocScoreOperator docScoreOp) {
+		TreeSet<Integer> keySet = docIdOp.operateDocId(sl1, sl2);
 		MyScoreList newSl = new MyScoreList();
 		for (int docId : keySet) {
-			newSl.addScore(docId,
-					Math.min(sl1.scores.get(docId), sl2.scores.get(docId)));
-		}
-		return newSl;
-	}
-
-	public static MyScoreList union(MyScoreList sl1, MyScoreList sl2) {
-		TreeSet<Integer> keySet = new TreeSet<Integer>(sl1.scores.keySet());
-		keySet.addAll(sl2.scores.keySet());
-		MyScoreList newSl = new MyScoreList();
-		for (int docId : keySet) {
-			double score = 0d;
-			if (sl1.scores.containsKey(docId) && !sl2.scores.containsKey(docId)) {
-				score = sl1.scores.get(docId);
-			} else if (sl2.scores.containsKey(docId)
-					&& !sl1.scores.containsKey(docId)) {
-				score = sl2.scores.get(docId);
-			} else if (sl1.scores.containsKey(docId)
-					&& sl2.scores.containsKey(docId)) {
-				score = Math.max(sl1.scores.get(docId), sl2.scores.get(docId));
+			if (sl1.scores.containsKey(docId) == false
+					&& sl2.scores.containsKey(docId) == false) {
+				continue;
 			}
-			newSl.addScore(docId, score);
-		}
-		return newSl;
-	}
-
-	public static MyScoreList plus(MyScoreList sl1, MyScoreList sl2) {
-		TreeSet<Integer> keySet = new TreeSet<Integer>(sl1.scores.keySet());
-		keySet.addAll(sl2.scores.keySet());
-		MyScoreList newSl = new MyScoreList();
-		for (int docId : keySet) {
-			double score = 0d;
-			if (sl1.scores.containsKey(docId) && !sl2.scores.containsKey(docId)) {
-				score = sl1.scores.get(docId);
-			} else if (sl2.scores.containsKey(docId)
-					&& !sl1.scores.containsKey(docId)) {
-				score = sl2.scores.get(docId);
-			} else if (sl1.scores.containsKey(docId)
-					&& sl2.scores.containsKey(docId)) {
-				score = sl1.scores.get(docId) + sl2.scores.get(docId);
-			}
-			newSl.addScore(docId, score);
+			newSl.putScore(docId, docScoreOp.operateDocScore(sl1, sl2, docId));
 		}
 		return newSl;
 	}
@@ -104,9 +65,8 @@ public class MyScoreList implements MyQryResult {
 					return -1;
 				}
 			}
-
 			// do not return 0 to prevent from merging
 		}
-
 	}
+
 }

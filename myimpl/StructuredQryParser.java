@@ -8,6 +8,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import myimpl.queryop.MyQryop;
 import myimpl.queryop.MyQryopTerm;
+import myimpl.queryop.MyQryopWeight;
 
 public class StructuredQryParser implements QryParser {
 
@@ -15,23 +16,12 @@ public class StructuredQryParser implements QryParser {
 	public MyQryop parseQuery(String queryStr) throws IOException {
 		queryStr = queryStr.trim();
 		if (!queryStr.contains("#")) { // input query is not structured
-			String[] queryTokens = MiscUtil.tokenizeQuery(queryStr);
-
-			// add #OR
-			StringBuilder sb = new StringBuilder();
-			sb.append("#OR(");
-			for (String token : queryTokens) {
-				sb.append(token + " ");
-			}
-			sb.append(")");
-
-			// then parse it
-			return parseQuery(sb.toString());
+			queryStr = MiscUtil.buildDefaultQueryString(queryStr);
 		}
 		return parseQueryExpr(queryStr);
 	}
 
-	private MyQryop parseQueryExpr(String queryExpr) {
+	private MyQryop parseQueryExpr(String queryExpr) throws IOException {
 		DefaultMutableTreeNode root = constructTreeNode(queryExpr);
 		return getQryop(root);
 	}
@@ -39,9 +29,10 @@ public class StructuredQryParser implements QryParser {
 	private DefaultMutableTreeNode constructTreeNode(String queryExpr) {
 		int i = 0, j = 0;
 		queryExpr = queryExpr.trim();
+		int expLenth = queryExpr.length();
 		LinkedList<Object> myStack = new LinkedList<Object>();
-		while (i < queryExpr.length() && j < queryExpr.length()) {
-			while (j < queryExpr.length() && queryExpr.charAt(j) != ' '
+		while (i < expLenth && j < expLenth) {
+			while (j < expLenth && queryExpr.charAt(j) != ' '
 					&& queryExpr.charAt(j) != '(' && queryExpr.charAt(j) != ')') {
 				j++;
 			}
@@ -53,7 +44,7 @@ public class StructuredQryParser implements QryParser {
 					myStack.push(new DefaultMutableTreeNode(token, false));
 				}
 			}
-			while (j < queryExpr.length()
+			while (j < expLenth
 					&& (queryExpr.charAt(j) == ' '
 							|| queryExpr.charAt(j) == '(' || queryExpr
 							.charAt(j) == ')')) {
@@ -90,8 +81,34 @@ public class StructuredQryParser implements QryParser {
 		return (DefaultMutableTreeNode) myStack.get(0);
 	}
 
-	private MyQryop getQryop(DefaultMutableTreeNode root) {
-		if (!root.getAllowsChildren()) {
+	private MyQryop getQryop(DefaultMutableTreeNode root) throws IOException {
+		if (root.getAllowsChildren()) { // query operator
+			String opName = root.getUserObject().toString();
+			int argSize = root.getChildCount();
+			if (opName.equals("#WEIGHT")) {
+				if (argSize % 2 != 0) {
+					throw new RuntimeException(
+							"#weight operator argument illegal format");
+				}
+				double[] weights = new double[argSize / 2];
+				MyQryop[] args = new MyQryop[argSize / 2];
+				for (int i = 0; i < args.length; i++) {
+					weights[i] = Double
+							.parseDouble((String) ((DefaultMutableTreeNode) root
+									.getChildAt(i * 2)).getUserObject());
+					args[i] = getQryop((DefaultMutableTreeNode) root
+							.getChildAt(i * 2 + 1));
+				}
+				return new MyQryopWeight(args, weights);
+			} else {
+				MyQryop[] args = new MyQryop[argSize];
+				for (int i = 0; i < args.length; i++) {
+					args[i] = getQryop((DefaultMutableTreeNode) root
+							.getChildAt(i));
+				}
+				return MyQryop.createQryop(opName, args);
+			}
+		} else {
 			String token = root.getUserObject().toString();
 			int dotPos = token.indexOf(".");
 			if (dotPos == -1) {
@@ -100,13 +117,6 @@ public class StructuredQryParser implements QryParser {
 				return new MyQryopTerm(token.substring(0, dotPos),
 						token.substring(dotPos) + 1);
 			}
-		} else {
-			MyQryop[] args = new MyQryop[root.getChildCount()];
-			for (int i = 0; i < args.length; i++) {
-				args[i] = getQryop((DefaultMutableTreeNode) root.getChildAt(i));
-			}
-			String opName = root.getUserObject().toString();
-			return MyQryop.createQryop(opName, args);
 		}
 	}
 }

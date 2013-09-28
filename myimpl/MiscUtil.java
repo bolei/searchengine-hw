@@ -35,6 +35,8 @@ public class MiscUtil {
 
 	private static HashMap<String, String> prop;
 
+	private static AlgorithmType algorithmType;
+
 	public static IndexReader createIndexReader(String indexPath)
 			throws IOException {
 		indexReader = DirectoryReader.open(FSDirectory
@@ -55,6 +57,14 @@ public class MiscUtil {
 			dls = new DocLengthStore(getIndexReader());
 		}
 		return dls;
+	}
+
+	public static AlgorithmType getAlgorithmType() {
+		if (algorithmType == null) {
+			algorithmType = AlgorithmType.valueOf(prop
+					.get("retrievalAlgorithm"));
+		}
+		return algorithmType;
 	}
 
 	/**
@@ -157,6 +167,44 @@ public class MiscUtil {
 
 	public static void setProp(HashMap<String, String> prop) {
 		MiscUtil.prop = prop;
+	}
+
+	private static HashMap<AlgorithmType, String> defaultOperator = new HashMap<AlgorithmType, String>();
+
+	static {
+		defaultOperator.put(AlgorithmType.Indri, "WEIGHT");
+		defaultOperator.put(AlgorithmType.UnrankedBoolean, "OR");
+		defaultOperator.put(AlgorithmType.RankedBoolean, "OR");
+		defaultOperator.put(AlgorithmType.BM25, "SUM");
+	}
+
+	public static String buildDefaultQueryString(String queryStr)
+			throws IOException {
+		String[] queryTokens = tokenizeQuery(queryStr);
+		StringBuilder sb = new StringBuilder();
+		if (algorithmType == AlgorithmType.Indri) {
+			sb.append("#WEIGHT(");
+			for (int i = 0; i < queryTokens.length; i++) {
+				sb.append(" 1.0 " + queryTokens[i]);
+			}
+			sb.append(")");
+		} else {
+			String defaultQryop = getDefaultQueryOperator();
+			if (defaultQryop == null) {
+				throw new RuntimeException(
+						"not able to get default query operator");
+			}
+			sb.append("#" + defaultQryop + "(");
+			for (String token : queryTokens) {
+				sb.append(token + " ");
+			}
+			sb.append(")");
+		}
+		return sb.toString();
+	}
+
+	public static String getDefaultQueryOperator() {
+		return defaultOperator.get(algorithmType);
 	}
 
 }

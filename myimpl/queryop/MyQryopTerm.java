@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import myimpl.queryresult.MyInvertedList;
 
-public class MyQryopTerm extends MyQryop {
+public class MyQryopTerm extends MyQryopInvertedList {
 
 	private String term;
 	private String field;

@@ -1,14 +1,10 @@
 package myimpl.queryop;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import myimpl.queryresult.MyQryResult;
 
 public abstract class MyQryop {
-
-	protected List<MyQryop> args = new ArrayList<MyQryop>();
 
 	/**
 	 * Evaluates the query operator, including any child operators and returns
@@ -24,8 +20,10 @@ public abstract class MyQryop {
 	 * 
 	 * @param opName
 	 * @return
+	 * @throws IOException
 	 */
-	public static MyQryop createQryop(String opName, MyQryop... myQryops) {
+	public static MyQryop createQryop(String opName, MyQryop... myQryops)
+			throws IOException {
 		if (opName.equals("#OR")) {
 			return new MyQryopOr(myQryops);
 		} else if (opName.equals("#AND")) {

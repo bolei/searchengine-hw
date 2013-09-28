@@ -1,6 +1,6 @@
 package myimpl.queryop.score;
 
-import myimpl.queryop.MyQryop;
+import myimpl.queryop.MyQryopInvertedList;
 import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyScoreList;
 
@@ -8,7 +8,7 @@ public class MyQryopRankedScore extends MyQryopScore {
 
 	// private static final int NUM_DOCS = MiscUtil.getIndexReader().numDocs();
 
-	protected MyQryopRankedScore(MyQryop q) {
+	protected MyQryopRankedScore(MyQryopInvertedList q) {
 		super(q);
 	}
 
@@ -20,7 +20,7 @@ public class MyQryopRankedScore extends MyQryopScore {
 			double tf = Math.log(invList.getTf(docId) + 1);
 			// double score = tf * idf;
 			double score = tf;
-			scoreList.addScore(docId, score);
+			scoreList.putScore(docId, score);
 		}
 		return scoreList;
 	}

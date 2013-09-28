@@ -8,7 +8,6 @@ import java.util.Scanner;
 import myimpl.MiscUtil;
 import myimpl.QryParser;
 import myimpl.StructuredQryParser;
-import myimpl.queryop.score.MyQryopScore;
 
 import org.apache.lucene.index.IndexReader;
 
@@ -69,11 +68,6 @@ public class QryEval {
 		if (READER == null) {
 			System.err.println(usage);
 			System.exit(1);
-		}
-
-		String retrievalAlg = params.get("retrievalAlgorithm");
-		if (retrievalAlg.equals("RankedBoolean")) {
-			MyQryopScore.setRankedModel(true);
 		}
 
 		BufferedReader br = new BufferedReader(new FileReader(

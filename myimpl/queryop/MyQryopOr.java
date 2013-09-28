@@ -1,24 +1,25 @@
 package myimpl.queryop;
 
 import java.io.IOException;
-import java.util.Collections;
 
-import myimpl.queryop.score.MyQryopScore;
 import myimpl.queryresult.MyScoreList;
+import myimpl.queryresult.operators.MyScoreListDocIdUnionOperator;
+import myimpl.queryresult.operators.MyScoreListDocScoreMaxOperator;
 
-public class MyQryopOr extends MyQryop {
-	public MyQryopOr(MyQryop... q) {
-		Collections.addAll(args, q);
+public class MyQryopOr extends MyQryopCombineScoreLists {
+	public MyQryopOr(MyQryop[] myQryops) {
+		super(myQryops);
 	}
 
 	@Override
-	public MyScoreList evaluate() throws IOException {
-		MyQryopScore impliedQryOp = MyQryopScore.createQryopScore(args.get(0));
-		MyScoreList result = impliedQryOp.evaluate();
+	public MyScoreList doEvaluation() throws IOException {
+		MyScoreList result = args.get(0).evaluate();
 		for (int i = 1; i < args.size(); i++) {
-			impliedQryOp = MyQryopScore.createQryopScore(args.get(i));
-			MyScoreList iResult = impliedQryOp.evaluate();
-			result = MyScoreList.union(result, iResult);
+			MyScoreList iResult = args.get(i).evaluate();
+			result = MyScoreList.operate(result, iResult,
+					new MyScoreListDocIdUnionOperator(),
+					new MyScoreListDocScoreMaxOperator());
+
 		}
 		return result;
 	}

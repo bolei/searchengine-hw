@@ -3,13 +3,13 @@ package myimpl.queryop.score;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import myimpl.queryop.MyQryop;
+import myimpl.queryop.MyQryopInvertedList;
 import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyScoreList;
 
 public class MyQryopUnrakedScore extends MyQryopScore {
 
-	protected MyQryopUnrakedScore(MyQryop q) {
+	protected MyQryopUnrakedScore(MyQryopInvertedList q) {
 		super(q);
 	}
 
@@ -22,7 +22,7 @@ public class MyQryopUnrakedScore extends MyQryopScore {
 		for (int docId : postings.keySet()) {
 
 			// Unranked Boolean. All matching documents get a score of 1.0.
-			scoreList.addScore(docId, 1.0d);
+			scoreList.putScore(docId, 1.0d);
 		}
 
 		return scoreList;

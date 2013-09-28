@@ -2,20 +2,22 @@ package myimpl.queryop.score;
 
 import java.io.IOException;
 
-import myimpl.queryop.MyQryop;
+import myimpl.AlgorithmType;
+import myimpl.MiscUtil;
+import myimpl.queryop.MyQryopInvertedList;
+import myimpl.queryop.MyQryopScoreList;
 import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyQryResult;
 import myimpl.queryresult.MyScoreList;
 
-public abstract class MyQryopScore extends MyQryop {
-
-	private static boolean isRankedModel = false;
+public abstract class MyQryopScore extends MyQryopScoreList {
+	private MyQryopInvertedList arg;
 
 	/**
 	 * The SCORE operator accepts just one argument.
 	 */
-	protected MyQryopScore(MyQryop q) {
-		this.args.add(q);
+	protected MyQryopScore(MyQryopInvertedList q) {
+		this.arg = q;
 	}
 
 	/**
@@ -24,7 +26,7 @@ public abstract class MyQryopScore extends MyQryop {
 	public MyScoreList evaluate() throws IOException {
 
 		// Evaluate the query argument.
-		MyQryResult result = args.get(0).evaluate();
+		MyQryResult result = arg.evaluate();
 
 		if (result instanceof MyScoreList) {
 			return (MyScoreList) result;
@@ -43,15 +45,24 @@ public abstract class MyQryopScore extends MyQryop {
 	protected abstract MyScoreList getScoreList(MyInvertedList invList)
 			throws IOException;
 
-	public static void setRankedModel(boolean isRanked) {
-		isRankedModel = isRanked;
-	}
-
-	public static MyQryopScore createQryopScore(MyQryop arg) {
-		if (isRankedModel) {
+	public static MyQryopScore createQryopScore(MyQryopInvertedList arg) {
+		AlgorithmType algType = MiscUtil.getAlgorithmType();
+		switch (algType) {
+		case RankedBoolean:
 			return new MyQryopRankedScore(arg);
-		} else {
+		case UnrankedBoolean:
 			return new MyQryopUnrakedScore(arg);
+		case BM25:
+			try {
+				return new MyQryopBM25Score(arg);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+		case Indri:
+			return new MyQryopIndriScore(arg);
+		default:
+			return null;
 		}
 	}
 

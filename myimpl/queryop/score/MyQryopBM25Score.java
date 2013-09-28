@@ -3,19 +3,18 @@ package myimpl.queryop.score;
 import java.io.IOException;
 
 import myimpl.MiscUtil;
-import myimpl.queryop.MyQryop;
+import myimpl.queryop.MyQryopInvertedList;
 import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyScoreList;
 
 public class MyQryopBM25Score extends MyQryopScore {
 	private double k1, b, k3;
 
-	public MyQryopBM25Score(MyQryop q, double k1, double b, double k3)
-			throws IOException {
+	public MyQryopBM25Score(MyQryopInvertedList q) throws IOException {
 		super(q);
-		this.k1 = k1;
-		this.b = b;
-		this.k3 = k3;
+		this.k1 = Double.parseDouble(MiscUtil.getProp().get("BM25:k_1"));
+		this.b = Double.parseDouble(MiscUtil.getProp().get("BM25:b"));
+		this.k3 = Double.parseDouble(MiscUtil.getProp().get("BM25:k_3"));
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class MyQryopBM25Score extends MyQryopScore {
 			double tfWeight = tf
 					/ (tf + k1 * (1 - b + b * (docLen / avg_doclen)));
 			double score = rsjWeight * tfWeight * userWeight;
-			scoreList.addScore(docId, score);
+			scoreList.putScore(docId, score);
 		}
 		return scoreList;
 	}
