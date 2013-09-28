@@ -32,6 +32,10 @@ public abstract class MyQryop {
 			int n = Integer
 					.parseInt(opName.substring(opName.lastIndexOf('/') + 1));
 			return new MyQryopNear(n, myQryops);
+		} else if (opName.startsWith("#UW/")) {
+			int n = Integer
+					.parseInt(opName.substring(opName.lastIndexOf('/') + 1));
+			return new MyQryopWindow(n, myQryops);
 		} else if (opName.startsWith("#SUM")) {
 			return new MyQryopSum(myQryops);
 		} else {
