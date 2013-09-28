@@ -31,17 +31,31 @@ public class MiscUtil {
 		analyzer.setStemmer(MyEnglishAnalyzerConfigurable.StemmerType.KSTEM);
 	}
 
+	private static HashMap<AlgorithmType, String> defaultOperator = new HashMap<AlgorithmType, String>();
+
+	static {
+		defaultOperator.put(AlgorithmType.Indri, "WEIGHT");
+		defaultOperator.put(AlgorithmType.UnrankedBoolean, "OR");
+		defaultOperator.put(AlgorithmType.RankedBoolean, "OR");
+		defaultOperator.put(AlgorithmType.BM25, "SUM");
+	}
+
 	private static DocLengthStore dls;
 
 	private static HashMap<String, String> prop;
 
 	private static AlgorithmType algorithmType;
 
-	public static IndexReader createIndexReader(String indexPath)
-			throws IOException {
-		indexReader = DirectoryReader.open(FSDirectory
-				.open(new File(indexPath)));
-		return indexReader;
+	public static HashMap<String, String> getProp() {
+		return prop;
+	}
+
+	public static void setProp(HashMap<String, String> prop) throws IOException {
+		MiscUtil.prop = prop;
+		algorithmType = AlgorithmType.valueOf(prop.get("retrievalAlgorithm"));
+		indexReader = DirectoryReader.open(FSDirectory.open(new File(prop
+				.get("indexPath"))));
+		dls = new DocLengthStore(getIndexReader());
 	}
 
 	public static IndexReader getIndexReader() {
@@ -52,18 +66,11 @@ public class MiscUtil {
 		return indexReader;
 	}
 
-	public static DocLengthStore getDocLengthStore() throws IOException {
-		if (dls == null) {
-			dls = new DocLengthStore(getIndexReader());
-		}
+	public static DocLengthStore getDocLengthStore() {
 		return dls;
 	}
 
 	public static AlgorithmType getAlgorithmType() {
-		if (algorithmType == null) {
-			algorithmType = AlgorithmType.valueOf(prop
-					.get("retrievalAlgorithm"));
-		}
 		return algorithmType;
 	}
 
@@ -159,23 +166,6 @@ public class MiscUtil {
 			eid = eid.substring(0, eid.length() - 2);
 
 		return (eid);
-	}
-
-	public static HashMap<String, String> getProp() {
-		return prop;
-	}
-
-	public static void setProp(HashMap<String, String> prop) {
-		MiscUtil.prop = prop;
-	}
-
-	private static HashMap<AlgorithmType, String> defaultOperator = new HashMap<AlgorithmType, String>();
-
-	static {
-		defaultOperator.put(AlgorithmType.Indri, "WEIGHT");
-		defaultOperator.put(AlgorithmType.UnrankedBoolean, "OR");
-		defaultOperator.put(AlgorithmType.RankedBoolean, "OR");
-		defaultOperator.put(AlgorithmType.BM25, "SUM");
 	}
 
 	public static String buildDefaultQueryString(String queryStr)

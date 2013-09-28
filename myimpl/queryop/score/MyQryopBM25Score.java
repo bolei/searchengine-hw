@@ -8,13 +8,16 @@ import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyScoreList;
 
 public class MyQryopBM25Score extends MyQryopScore {
-	private double k1, b, k3;
+
+	private static double k1 = Double.parseDouble(MiscUtil.getProp().get(
+			"BM25:k_1"));
+	private static double b = Double.parseDouble(MiscUtil.getProp().get(
+			"BM25:b"));
+	private static double k3 = Double.parseDouble(MiscUtil.getProp().get(
+			"BM25:k_3"));
 
 	public MyQryopBM25Score(MyQryopInvertedList q) throws IOException {
 		super(q);
-		this.k1 = Double.parseDouble(MiscUtil.getProp().get("BM25:k_1"));
-		this.b = Double.parseDouble(MiscUtil.getProp().get("BM25:b"));
-		this.k3 = Double.parseDouble(MiscUtil.getProp().get("BM25:k_3"));
 	}
 
 	@Override

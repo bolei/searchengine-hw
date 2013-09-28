@@ -8,15 +8,14 @@ import myimpl.queryresult.MyInvertedList;
 import myimpl.queryresult.MyScoreList;
 
 public class MyQryopIndriScore extends MyQryopScore {
-	private double lambda, mu;
-	private String smoothing = "ctf";
+	private static double lambda = Double.parseDouble(MiscUtil.getProp().get(
+			"Indri:lambda"));
+	private static double mu = Double.parseDouble(MiscUtil.getProp().get(
+			"Indri:mu"));
+	private static String smoothing = MiscUtil.getProp().get("Indri:smoothing");
 
 	protected MyQryopIndriScore(MyQryopInvertedList q) {
 		super(q);
-		this.lambda = Double
-				.parseDouble(MiscUtil.getProp().get("Indri:lambda"));
-		this.mu = Double.parseDouble(MiscUtil.getProp().get("Indri:mu"));
-		this.smoothing = MiscUtil.getProp().get("Indri:smoothing");
 	}
 
 	@Override
@@ -46,7 +45,6 @@ public class MyQryopIndriScore extends MyQryopScore {
 			double lenTerm = MiscUtil.getIndexReader().getSumTotalTermFreq(
 					invList.getFieldString());
 			return ctf / lenTerm;
-
 		}
 	}
 

@@ -54,16 +54,10 @@ public class QryEval {
 
 		MiscUtil.setProp(params);
 
-		// parameters required for this example to run
-		if (!params.containsKey("indexPath")) {
-			System.err.println("Error: Parameters were missing.");
-			System.exit(1);
-		}
-
 		// open the index
 		// READER = DirectoryReader.open(FSDirectory.open(new File(params
 		// .get("indexPath"))));
-		READER = MiscUtil.createIndexReader(params.get("indexPath"));
+		READER = MiscUtil.getIndexReader();
 
 		if (READER == null) {
 			System.err.println(usage);
