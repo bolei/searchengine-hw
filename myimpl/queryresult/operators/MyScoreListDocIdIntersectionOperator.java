@@ -9,8 +9,8 @@ public class MyScoreListDocIdIntersectionOperator implements
 
 	@Override
 	public TreeSet<Integer> operateDocId(MyScoreList sl1, MyScoreList sl2) {
-		TreeSet<Integer> keySet = new TreeSet<Integer>(sl1.getScores().keySet());
-		keySet.retainAll(sl2.getScores().keySet());
+		TreeSet<Integer> keySet = new TreeSet<Integer>(sl1.getDocIds());
+		keySet.retainAll(sl2.getDocIds());
 		return keySet;
 	}
 

@@ -14,10 +14,6 @@ public class MyScoreList implements MyQryResult {
 
 	private double defaultScore = 0;
 
-	public double getDefaultScore() {
-		return defaultScore;
-	}
-
 	public void setDefaultScore(double defaultScore) {
 		this.defaultScore = defaultScore;
 	}
@@ -26,8 +22,16 @@ public class MyScoreList implements MyQryResult {
 		scores.put(docId, score);
 	}
 
-	public TreeMap<Integer, Double> getScores() {
-		return scores;
+	public double getScoreForDoc(int docId) {
+		if (scores.containsKey(docId)) {
+			return scores.get(docId);
+		} else {
+			return defaultScore;
+		}
+	}
+
+	public TreeSet<Integer> getDocIds() {
+		return new TreeSet<Integer>(scores.keySet());
 	}
 
 	public TreeMap<Integer, Double> getSortedScores() {
@@ -45,7 +49,7 @@ public class MyScoreList implements MyQryResult {
 		for (int docId : keySet) {
 			newSl.putScore(docId, docScoreOp.operateDocScore(sl1, sl2, docId));
 		}
-		newSl.setDefaultScore(docScoreOp.operateDefaultScore(sl1, sl2));
+		newSl.defaultScore = docScoreOp.operateDefaultScore(sl1, sl2);
 		return newSl;
 	}
 
@@ -75,5 +79,4 @@ public class MyScoreList implements MyQryResult {
 			// do not return 0 to prevent from merging
 		}
 	}
-
 }

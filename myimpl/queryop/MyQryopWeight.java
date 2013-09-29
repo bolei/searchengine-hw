@@ -29,7 +29,8 @@ public class MyQryopWeight extends MyQryopCombineScoreLists {
 
 		for (int i = 1; i < weights.length; i++) {
 			MyScoreList curSl = applyWeight(i);
-			MyScoreList.operate(sl, curSl, new MyScoreListDocIdUnionOperator(),
+			sl = MyScoreList.operate(sl, curSl,
+					new MyScoreListDocIdUnionOperator(),
 					new MyScoreListDocScorePlusOperator());
 		}
 		return sl;
@@ -37,10 +38,12 @@ public class MyQryopWeight extends MyQryopCombineScoreLists {
 
 	private MyScoreList applyWeight(int index) throws IOException {
 		MyScoreList scoreList = args.get(index).evaluate();
-		for (int docId : scoreList.getScores().keySet()) {
-			double oldScore = scoreList.getScores().get(docId);
+		for (int docId : scoreList.getDocIds()) {
+			double oldScore = scoreList.getScoreForDoc(docId);
 			scoreList.putScore(docId, oldScore * weights[index] / totalWeight);
 		}
+		scoreList.setDefaultScore(scoreList.getScoreForDoc(-1) * weights[index]
+				/ totalWeight);
 		return scoreList;
 	}
 
