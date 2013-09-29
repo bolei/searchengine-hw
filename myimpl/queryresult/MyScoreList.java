@@ -12,6 +12,16 @@ public class MyScoreList implements MyQryResult {
 	// <docId, score>
 	private TreeMap<Integer, Double> scores = new TreeMap<Integer, Double>();
 
+	private double defaultScore = 0;
+
+	public double getDefaultScore() {
+		return defaultScore;
+	}
+
+	public void setDefaultScore(double defaultScore) {
+		this.defaultScore = defaultScore;
+	}
+
 	public void putScore(Integer docId, Double score) {
 		scores.put(docId, score);
 	}
@@ -33,12 +43,9 @@ public class MyScoreList implements MyQryResult {
 		TreeSet<Integer> keySet = docIdOp.operateDocId(sl1, sl2);
 		MyScoreList newSl = new MyScoreList();
 		for (int docId : keySet) {
-			if (sl1.scores.containsKey(docId) == false
-					&& sl2.scores.containsKey(docId) == false) {
-				continue;
-			}
 			newSl.putScore(docId, docScoreOp.operateDocScore(sl1, sl2, docId));
 		}
+		newSl.setDefaultScore(docScoreOp.operateDefaultScore(sl1, sl2));
 		return newSl;
 	}
 

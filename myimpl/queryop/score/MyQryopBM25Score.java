@@ -42,6 +42,7 @@ public class MyQryopBM25Score extends MyQryopScore {
 			double score = rsjWeight * tfWeight * userWeight;
 			scoreList.putScore(docId, score);
 		}
+		// default score is 0. no need to set
 		return scoreList;
 	}
 

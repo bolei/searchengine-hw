@@ -3,7 +3,7 @@ package myimpl.queryop;
 import java.io.IOException;
 
 import myimpl.queryresult.MyScoreList;
-import myimpl.queryresult.operators.MyScoreListDocIdIntersectionOperator;
+import myimpl.queryresult.operators.MyScoreListDocIdUnionOperator;
 import myimpl.queryresult.operators.MyScoreListDocScorePlusOperator;
 
 public class MyQryopWeight extends MyQryopCombineScoreLists {
@@ -25,13 +25,11 @@ public class MyQryopWeight extends MyQryopCombineScoreLists {
 
 	@Override
 	public MyScoreList doEvaluation() throws IOException {
-
 		MyScoreList sl = applyWeight(0);
 
 		for (int i = 1; i < weights.length; i++) {
 			MyScoreList curSl = applyWeight(i);
-			MyScoreList.operate(sl, curSl,
-					new MyScoreListDocIdIntersectionOperator(),
+			MyScoreList.operate(sl, curSl, new MyScoreListDocIdUnionOperator(),
 					new MyScoreListDocScorePlusOperator());
 		}
 		return sl;

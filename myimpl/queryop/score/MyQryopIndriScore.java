@@ -31,6 +31,12 @@ public class MyQryopIndriScore extends MyQryopScore {
 					+ (1 - lambda) * qic);
 			scoreList.putScore(docId, score);
 		}
+		double avgDocLen = MiscUtil.getIndexReader().getSumTotalTermFreq(
+				invList.getFieldString())
+				/ (double) MiscUtil.getIndexReader().getDocCount(
+						invList.getFieldString());
+		scoreList.setDefaultScore(Math.log(lambda * (mu * qic)
+				/ (avgDocLen + mu) + (1 - lambda) * qic));
 		return scoreList;
 	}
 
