@@ -69,6 +69,9 @@ public class QryEval {
 		long begin = System.currentTimeMillis();
 		try {
 			while ((line = br.readLine()) != null) {
+				if (line.isEmpty()) {
+					continue;
+				}
 				String[] strArr = line.split(":");
 				// String queryId = strArr[0];
 				MiscUtil.printResults(strArr[0],

@@ -115,7 +115,7 @@ public class StructuredQryParser implements QryParser {
 				return new MyQryopTerm(token);
 			} else {
 				return new MyQryopTerm(token.substring(0, dotPos),
-						token.substring(dotPos) + 1);
+						token.substring(dotPos + 1));
 			}
 		}
 	}

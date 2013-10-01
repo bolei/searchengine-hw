@@ -22,6 +22,10 @@ public class MyQryopIndriScore extends MyQryopScore {
 	protected MyScoreList getScoreList(MyInvertedList invList)
 			throws IOException {
 		MyScoreList scoreList = new MyScoreList();
+		if (invList.getDf() == 0) {
+			scoreList.setDefaultScore(0d);
+			return scoreList;
+		}
 		double qic = getMLEofQiC(invList);
 		for (int docId : invList.getDocPostings().keySet()) {
 			double tf = invList.getTf(docId);
@@ -31,23 +35,32 @@ public class MyQryopIndriScore extends MyQryopScore {
 					+ (1 - lambda) * qic);
 			scoreList.putScore(docId, score);
 		}
+
 		double avgDocLen = MiscUtil.getIndexReader().getSumTotalTermFreq(
 				invList.getFieldString())
 				/ (double) MiscUtil.getIndexReader().getDocCount(
 						invList.getFieldString());
-		scoreList.setDefaultScore(Math.log(lambda * (mu * qic)
-				/ (avgDocLen + mu) + (1 - lambda) * qic));
+		double prob = lambda * (mu * qic) / (avgDocLen + mu) + (1 - lambda)
+				* qic;
+
+		scoreList.setDefaultScore(Math.log(prob));
 		return scoreList;
 	}
 
 	private double getMLEofQiC(MyInvertedList invList) throws IOException {
 		if (smoothing.equals("df")) {
-			double df = invList.getDf();
+			int df = invList.getDf();
+			if (df == 0) {
+				return 0;
+			}
 			double lenDoc = MiscUtil.getIndexReader().getDocCount(
 					invList.getFieldString());
 			return df / lenDoc;
 		} else { // default ctf
-			double ctf = invList.getCtf();
+			int ctf = invList.getCtf();
+			if (ctf == 0) {
+				return 0;
+			}
 			double lenTerm = MiscUtil.getIndexReader().getSumTotalTermFreq(
 					invList.getFieldString());
 			return ctf / lenTerm;

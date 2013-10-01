@@ -124,7 +124,7 @@ public class MiscUtil {
 	public static void printResults(String queryId, MyQryResult result,
 			boolean printTop100, boolean showExtDocId) throws IOException {
 		if (result instanceof MyScoreList == false) {
-			System.out.println(queryId + ":\tNo results.");
+			System.err.println(queryId + ":\tNo results.");
 			return;
 		}
 		MyScoreList sl = (MyScoreList) result;
