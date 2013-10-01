@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import myimpl.queryop.MyQryop;
+import myimpl.queryop.MyQryopEmpty;
 import myimpl.queryresult.MyQryResult;
 import myimpl.queryresult.MyScoreList;
 
@@ -199,4 +202,13 @@ public class MiscUtil {
 		return defaultOperator.get(algorithmType);
 	}
 
+	public static LinkedList<MyQryop> cleanArguments(MyQryop... myQryops) {
+		LinkedList<MyQryop> args = new LinkedList<MyQryop>();
+		for (int i = 0; i < myQryops.length; i++) {
+			if (myQryops[i] instanceof MyQryopEmpty == false) {
+				args.add(myQryops[i]);
+			}
+		}
+		return args;
+	}
 }

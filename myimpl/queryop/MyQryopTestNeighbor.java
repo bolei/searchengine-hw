@@ -22,6 +22,9 @@ public abstract class MyQryopTestNeighbor extends MyQryopInvertedList {
 
 	@Override
 	public MyInvertedList evaluate() throws IOException {
+		if (args.isEmpty()) {
+			System.err.println("MyQryopTestNeighbor: arg is empty!");
+		}
 		MyQryResult result = args.get(0).evaluate();
 		if (result instanceof MyInvertedList == false) {
 			throw new RuntimeException(

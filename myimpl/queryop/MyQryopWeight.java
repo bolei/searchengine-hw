@@ -8,10 +8,10 @@ import myimpl.queryresult.operators.MyScoreListDocScorePlusOperator;
 
 public class MyQryopWeight extends MyQryopCombineScoreLists {
 
-	protected double[] weights;
+	protected Double[] weights;
 	protected double totalWeight = 0;
 
-	public MyQryopWeight(MyQryop[] q, double[] weights) {
+	public MyQryopWeight(MyQryop[] q, Double[] weights) {
 		super(q);
 		if (weights.length != q.length) {
 			throw new RuntimeException(

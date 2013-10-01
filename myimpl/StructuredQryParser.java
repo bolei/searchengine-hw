@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import myimpl.queryop.MyQryop;
+import myimpl.queryop.MyQryopEmpty;
 import myimpl.queryop.MyQryopTerm;
 import myimpl.queryop.MyQryopWeight;
 
@@ -40,9 +41,7 @@ public class StructuredQryParser implements QryParser {
 			if (token.startsWith("#")) {
 				myStack.push(new DefaultMutableTreeNode(token, true));
 			} else {
-				if (MiscUtil.isStopWord(token) == false) {
-					myStack.push(new DefaultMutableTreeNode(token, false));
-				}
+				myStack.push(new DefaultMutableTreeNode(token, false));
 			}
 			while (j < expLenth
 					&& (queryExpr.charAt(j) == ' '
@@ -90,16 +89,24 @@ public class StructuredQryParser implements QryParser {
 					throw new RuntimeException(
 							"#weight operator argument illegal format");
 				}
-				double[] weights = new double[argSize / 2];
-				MyQryop[] args = new MyQryop[argSize / 2];
-				for (int i = 0; i < args.length; i++) {
-					weights[i] = Double
-							.parseDouble((String) ((DefaultMutableTreeNode) root
-									.getChildAt(i * 2)).getUserObject());
-					args[i] = getQryop((DefaultMutableTreeNode) root
+				LinkedList<Double> weights = new LinkedList<Double>();
+				LinkedList<MyQryop> args = new LinkedList<MyQryop>();
+				argSize /= 2;
+				for (int i = 0; i < argSize; i++) {
+					MyQryop curArg = getQryop((DefaultMutableTreeNode) root
 							.getChildAt(i * 2 + 1));
+					if (curArg instanceof MyQryopEmpty) {
+						continue;
+					}
+					weights.add(Double
+							.parseDouble((String) ((DefaultMutableTreeNode) root
+									.getChildAt(i * 2)).getUserObject()));
+					args.add(getQryop((DefaultMutableTreeNode) root
+							.getChildAt(i * 2 + 1)));
 				}
-				return new MyQryopWeight(args, weights);
+
+				return new MyQryopWeight(args.toArray(new MyQryop[] {}),
+						weights.toArray(new Double[] {}));
 			} else {
 				MyQryop[] args = new MyQryop[argSize];
 				for (int i = 0; i < args.length; i++) {
@@ -110,6 +117,9 @@ public class StructuredQryParser implements QryParser {
 			}
 		} else {
 			String token = root.getUserObject().toString();
+			if (MiscUtil.isStopWord(token)) {
+				return new MyQryopEmpty();
+			}
 			int dotPos = token.indexOf(".");
 			if (dotPos == -1) {
 				return new MyQryopTerm(MiscUtil.stem(token));

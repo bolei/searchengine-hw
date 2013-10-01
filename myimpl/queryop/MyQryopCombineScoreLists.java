@@ -17,7 +17,7 @@ public abstract class MyQryopCombineScoreLists extends MyQryopScoreList {
 				this.args.add(MyQryopScore
 						.createQryopScore((MyQryopInvertedList) q[i]));
 			} else {
-				args.add((MyQryopScore) q[i]);
+				args.add((MyQryopScoreList) q[i]);
 			}
 		}
 	}

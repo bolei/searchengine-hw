@@ -1,6 +1,7 @@
 package myimpl.queryop;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import myimpl.AlgorithmType;
 import myimpl.MiscUtil;
@@ -26,6 +27,12 @@ public abstract class MyQryop {
 	 */
 	public static MyQryop createQryop(String opName, MyQryop... myQryops)
 			throws IOException {
+		// throw away empty query operators
+		LinkedList<MyQryop> args = MiscUtil.cleanArguments(myQryops);
+		if (args.isEmpty()) {
+			return new MyQryopEmpty();
+		}
+		myQryops = args.toArray(new MyQryop[] {});
 		if (opName.equals("#OR")) {
 			return new MyQryopOr(myQryops);
 		} else if (opName.equals("#AND")) {
