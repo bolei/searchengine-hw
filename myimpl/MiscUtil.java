@@ -103,6 +103,15 @@ public class MiscUtil {
 		return tokens.toArray(new String[tokens.size()]);
 	}
 
+	public static String stem(String token) throws IOException {
+		String[] tokenized = tokenizeQuery(token);
+		if (tokenized.length == 0 || tokenized[0] == null
+				|| tokenized[0].isEmpty()) {
+			return token;
+		}
+		return tokenized[0];
+	}
+
 	public static boolean isStopWord(String token) {
 		return analyzer.getStopwordSet().contains(token);
 	}

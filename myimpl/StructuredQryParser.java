@@ -112,9 +112,10 @@ public class StructuredQryParser implements QryParser {
 			String token = root.getUserObject().toString();
 			int dotPos = token.indexOf(".");
 			if (dotPos == -1) {
-				return new MyQryopTerm(token);
+				return new MyQryopTerm(MiscUtil.stem(token));
 			} else {
-				return new MyQryopTerm(token.substring(0, dotPos),
+				return new MyQryopTerm(
+						MiscUtil.stem(token.substring(0, dotPos)),
 						token.substring(dotPos + 1));
 			}
 		}
