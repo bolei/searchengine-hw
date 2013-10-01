@@ -2,6 +2,8 @@ package myimpl.queryop;
 
 import java.io.IOException;
 
+import myimpl.AlgorithmType;
+import myimpl.MiscUtil;
 import myimpl.queryresult.MyQryResult;
 
 public abstract class MyQryop {
@@ -27,7 +29,11 @@ public abstract class MyQryop {
 		if (opName.equals("#OR")) {
 			return new MyQryopOr(myQryops);
 		} else if (opName.equals("#AND")) {
-			return new MyQryopAnd(myQryops);
+			if (MiscUtil.getAlgorithmType() == AlgorithmType.Indri) {
+				return new MyQryopIndriAnd(myQryops);
+			} else {
+				return new MyQryopAnd(myQryops);
+			}
 		} else if (opName.startsWith("#NEAR/")) {
 			int n = Integer
 					.parseInt(opName.substring(opName.lastIndexOf('/') + 1));

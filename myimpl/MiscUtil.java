@@ -34,7 +34,7 @@ public class MiscUtil {
 	private static HashMap<AlgorithmType, String> defaultOperator = new HashMap<AlgorithmType, String>();
 
 	static {
-		defaultOperator.put(AlgorithmType.Indri, "WEIGHT");
+		defaultOperator.put(AlgorithmType.Indri, "AND");
 		defaultOperator.put(AlgorithmType.UnrankedBoolean, "OR");
 		defaultOperator.put(AlgorithmType.RankedBoolean, "OR");
 		defaultOperator.put(AlgorithmType.BM25, "SUM");
@@ -171,25 +171,18 @@ public class MiscUtil {
 	public static String buildDefaultQueryString(String queryStr)
 			throws IOException {
 		String[] queryTokens = tokenizeQuery(queryStr);
+
 		StringBuilder sb = new StringBuilder();
-		if (algorithmType == AlgorithmType.Indri) {
-			sb.append("#WEIGHT(");
-			for (int i = 0; i < queryTokens.length; i++) {
-				sb.append(" 1.0 " + queryTokens[i]);
-			}
-			sb.append(")");
-		} else {
-			String defaultQryop = getDefaultQueryOperator();
-			if (defaultQryop == null) {
-				throw new RuntimeException(
-						"not able to get default query operator");
-			}
-			sb.append("#" + defaultQryop + "(");
-			for (String token : queryTokens) {
-				sb.append(token + " ");
-			}
-			sb.append(")");
+		String defaultQryop = getDefaultQueryOperator();
+		if (defaultQryop == null) {
+			throw new RuntimeException("not able to get default query operator");
 		}
+		sb.append("#" + defaultQryop + "(");
+		for (String token : queryTokens) {
+			sb.append(token + " ");
+		}
+		sb.append(")");
+
 		return sb.toString();
 	}
 
