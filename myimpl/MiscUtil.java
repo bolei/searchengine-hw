@@ -134,7 +134,7 @@ public class MiscUtil {
 	 * @throws IOException
 	 */
 	public static void printResults(String queryId, MyQryResult result,
-			boolean printTop100, boolean showExtDocId) throws IOException {
+			boolean debug) throws IOException {
 		if (result instanceof MyScoreList == false) {
 			System.err.println(queryId + ":\tNo results.");
 			return;
@@ -142,10 +142,10 @@ public class MiscUtil {
 		MyScoreList sl = (MyScoreList) result;
 		int rank = 1;
 		for (Entry<Integer, Double> entry : sl.getSortedScores().entrySet()) {
-			if (printTop100 && rank > 100) {
+			if (debug == false && rank > 100) {
 				return;
 			}
-			if (showExtDocId) {
+			if (debug == false) {
 				System.out.println(String.format("%s\tQ0\t%s\t%d\t%f\trun-1",
 						queryId, getExternalDocid(entry.getKey()), rank,
 						entry.getValue()));

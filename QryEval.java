@@ -8,6 +8,8 @@ import java.util.Scanner;
 import myimpl.MiscUtil;
 import myimpl.QryParser;
 import myimpl.StructuredQryParser;
+import myimpl.expansion.PseudoRelevanceFeedback;
+import myimpl.queryresult.MyScoreList;
 
 import org.apache.lucene.index.IndexReader;
 
@@ -33,6 +35,8 @@ public class QryEval {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
+
+		boolean debug = false;
 
 		// must supply parameter file
 		if (args.length < 1) {
@@ -66,17 +70,30 @@ public class QryEval {
 
 		BufferedReader br = new BufferedReader(new FileReader(
 				params.get("queryFilePath")));
+		boolean fb = Boolean.parseBoolean(params.get("fb"));
 		long begin = System.currentTimeMillis();
+		PseudoRelevanceFeedback prf = null;
+		if (fb == true) {
+			prf = new PseudoRelevanceFeedback(MiscUtil.getProp());
+		}
 		try {
 			while ((line = br.readLine()) != null) {
 				if (line.isEmpty()) {
 					continue;
 				}
 				String[] strArr = line.split(":");
-				// String queryId = strArr[0];
-				MiscUtil.printResults(strArr[0],
-						defaultQueryParser.parseQuery(strArr[1]).evaluate(),
-						true, true);
+				String queryId = strArr[0];
+				String queryStr = strArr[1];
+				MyScoreList scoreList = (MyScoreList) defaultQueryParser
+						.parseQuery(queryStr).evaluate();
+				if (fb == true) {
+					String expandedQuery = prf.expandQuery(
+							Integer.parseInt(queryId), queryStr,
+							scoreList.getSortedScores());
+					scoreList = (MyScoreList) defaultQueryParser.parseQuery(
+							expandedQuery).evaluate();
+				}
+				MiscUtil.printResults(queryId, scoreList, debug);
 			}
 		} finally {
 			if (br != null) {
