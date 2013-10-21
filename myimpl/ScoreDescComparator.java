@@ -25,7 +25,7 @@ public class ScoreDescComparator<T extends Comparable<T>> implements
 			if (o1.compareTo(o2) > 0) {
 				return 1;
 			} else {
-				return 0;
+				return -1;
 			}
 		}
 		// do not return 0 to prevent from merging

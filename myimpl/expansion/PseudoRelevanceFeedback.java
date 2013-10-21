@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import myimpl.MiscUtil;
@@ -18,6 +19,8 @@ public class PseudoRelevanceFeedback {
 	private final double mu;
 	private final double fbOrigWeight;
 	private final BufferedWriter bout;
+	private final boolean usingLambda;
+	private double lambda = 1.0d;
 
 	public PseudoRelevanceFeedback(HashMap<String, String> properties)
 			throws IOException {
@@ -27,26 +30,37 @@ public class PseudoRelevanceFeedback {
 		fbOrigWeight = Double.parseDouble(properties.get("fbOrigWeight"));
 		bout = new BufferedWriter(new FileWriter(new File(
 				properties.get("fbFile"))));
+		usingLambda = Boolean.parseBoolean(properties.get("fbUsingLambda"));
+		if (usingLambda == true) {
+			lambda = Double.parseDouble(properties.get("Indri:lambda"));
+		}
 	}
 
 	public String expandQuery(int queryId, String queryString,
 			TreeMap<Integer, Double> sortedDocScores) throws IOException {
 		// process top n docs
-		Iterator<Integer> docIdIt = sortedDocScores.keySet().iterator();
+		Iterator<Entry<Integer, Double>> entryIt = sortedDocScores.entrySet()
+				.iterator();
 		HashMap<String, Double> unsortedTermScores = new HashMap<String, Double>();
-		for (int i = 0; i < fbDocs && docIdIt.hasNext(); i++) { // for each doc
-			int docId = docIdIt.next();
-			double oldScore = sortedDocScores.get(docId);
+		for (int i = 0; i < fbDocs && entryIt.hasNext(); i++) { // for each doc
+			Entry<Integer, Double> entry = entryIt.next();
+			int docId = entry.getKey();
+			double oldScore = entry.getValue();
 			TermVector tv = new TermVector(docId, "body");
 			int stemLen = tv.stemsLength();
-			for (int j = 0; j < stemLen; j++) {
-				double tf = tv.stemFreq(i);
+			for (int j = 1; j < stemLen; j++) {
+				double tf = tv.stemFreq(j);
 				double docLen = tv.positionsLength();
-				double score = Math.pow(Math.E, oldScore)
-						* (tf + mu * getPmleRgivenC(j, tv)) / (docLen + mu);
-				if (unsortedTermScores.containsKey(tv.stemString(i))) {
+				double pmlRgivenC = getPmleRgivenC(j, tv);
+				double pDgivenI = Math.pow(Math.E, oldScore);
+				double pRgivenD = (tf + mu * pmlRgivenC) / (docLen + mu);
+				if (usingLambda == true) {
+					pRgivenD = (lambda * pRgivenD + (1 - lambda) * pmlRgivenC);
+				}
+				double score = pRgivenD * pDgivenI;
+				if (unsortedTermScores.containsKey(tv.stemString(j))) {
 					unsortedTermScores.put(tv.stemString(j), score
-							+ unsortedTermScores.get(tv.stemString(i)));
+							+ unsortedTermScores.get(tv.stemString(j)));
 				} else {
 					unsortedTermScores.put(tv.stemString(j), score);
 				}
@@ -56,14 +70,18 @@ public class PseudoRelevanceFeedback {
 		// rank the query terms by score
 		TreeMap<String, Double> termRank = new TreeMap<String, Double>(
 				new ScoreDescComparator<String>(unsortedTermScores));
+		termRank.putAll(unsortedTermScores);
 
 		// create additional query string
-		Iterator<String> termIt = termRank.keySet().iterator();
+		Iterator<Entry<String, Double>> termEntryIt = termRank.entrySet()
+				.iterator();
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("#WEIGHT (");
-		for (int i = 0; i < fbTerms && termIt.hasNext(); i++) {
-			String term = termIt.next();
-			double score = termRank.get(term);
+		for (int i = 0; i < fbTerms && termEntryIt.hasNext(); i++) {
+			Entry<String, Double> entry = termEntryIt.next();
+			String term = entry.getKey();
+			double score = entry.getValue();
 			sb.append(score + " " + term + " ");
 		}
 		sb.append(")");
@@ -73,11 +91,16 @@ public class PseudoRelevanceFeedback {
 		bout.append(addedQuery + "\n");
 		bout.flush();
 
+		queryString = queryString.trim();
+		if (!queryString.contains("#")) { // input query is not structured
+			queryString = MiscUtil.buildDefaultQueryString(queryString);
+		}
+
 		// create a complete expanded query
 		sb = new StringBuilder();
 		sb.append("#WEIGHT(");
 		sb.append(fbOrigWeight + " " + queryString + " " + (1 - fbOrigWeight)
-				+ addedQuery);
+				+ " " + addedQuery);
 		sb.append(")");
 		return sb.toString();
 	}
@@ -90,9 +113,9 @@ public class PseudoRelevanceFeedback {
 		}
 	}
 
-	private static double getPmleRgivenC(int i, TermVector tv)
+	private static double getPmleRgivenC(int j, TermVector tv)
 			throws IOException {
-		long ctf = tv.totalStemFreq(i);
+		long ctf = tv.totalStemFreq(j);
 		long lenTerm = MiscUtil.getIndexReader().getSumTotalTermFreq("body");
 		return ctf / (double) lenTerm;
 	}
